@@ -12,7 +12,6 @@ var p = plivo.RestAPI({
     authToken: config.authToken
 });
 
-
 function createApplication(req, res, next) {
     var params = {};
     params.answer_url = "http://plivodirectdial.herokuapp.com/response/sip/route/?DialMusic=real&CLID=+917878499987";
@@ -23,7 +22,7 @@ function createApplication(req, res, next) {
         endpointparams.username = "testuser";
         endpointparams.password = "test123";
         endpointparams.alias = "Test";
-        endpointparams.app_id = "75856007428319171";
+        endpointparams.app_id = response.app_id;
         p.create_endpoint(endpointparams, function (status, response) {
             console.log('Status: ', status);
             console.log('API Response:\n', response);
