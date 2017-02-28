@@ -26,9 +26,27 @@ function createApplication(req, res, next) {
         p.create_endpoint(endpointparams, function (status, response) {
             console.log('Status: ', status);
             console.log('API Response:\n', response);
-
         });
     });
 }
 
-module.exports = { createApplication };
+function getApplicationById(req, res, next) {
+    var params = {
+        'app_id': req.params.appId
+    }
+    p.get_application(params, function (status, response) {
+        return res.json({ status: status, data: response });
+    });
+}
+
+function updateApplicationById(req, res, next) {
+    var params = {};
+    params.app_id = "23207307156461887";
+    params.answer_url = "http://plivodirectdial.herokuapp.com/response/sip/route/?DialMusic=real&CLID=+917878499987";
+    p.modify_application(params, function (status, response) {
+        return res.json({ status: status, data: response });
+    });
+}
+
+
+module.exports = { createApplication, getApplicationById, updateApplicationById };

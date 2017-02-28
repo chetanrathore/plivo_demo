@@ -19,6 +19,63 @@ server.listen(app.get('port'),function(){
     console.log('Server listing at port ' + server.address().port);
 });
 
+var plivo = require("plivo");
+var util = require("util");
+
+app.all('/record_api/', function (req, res) {
+    console.log("inside record call");
+    var getdigits_action_url = util.format("http://%s/record_api_action/", req.get('host'));
+    var params = {
+        'action': getdigits_action_url, // The URL to which the digits are sent.
+        'method': 'GET', // Submit to action URL using GET or POST.
+        'timeout': '7', // Time in seconds to wait to receive the first digit.
+        'numDigits': '1', // Maximum number of digits to be processed in the current operation.
+        'retries': '1', // Indicates the number of attempts the user is allowed to input digits
+        'redirect': 'false' // Redirect to action URL if true. If false, only request the URL and continue to next element.
+    };
+    var response = plivo.Response();
+    var getDigits = response.addGetDigits(params);
+    getDigits.addSpeak("Press 1 to record this call");
+
+    // Time to wait in seconds
+    params = {'length': "30"};
+    response.addWait(params);
+
+    console.log(response.toXML());
+    res.set({'Content-Type': 'text/xml'});
+    res.send(response.toXML());
+});
+
+app.all('/record_api_action/', function (req, res) {
+    // Plivo passes the digit captured by the xml produced by /record_api/ function as the parameter Digits
+    var digit = req.param('Digits');
+    // CallUUID parameter is automatically added by Plivo when processing the xml produced by /record_api/ function
+    var call_uuid = req.param('CallUUID');
+
+    var p = plivo.RestAPI({
+        "authId": config.authId,
+        "authToken": config.authToken
+    });
+
+    if (digit === "1") {
+        // ID of the call
+        var params = {'call_uuid':call_uuid};
+        // Here we make the actual API call and store the response
+        var response = p.record(params);
+        console.log(response);
+    } else
+        console.log("Wrong Input");
+});
+
+
+app.all('/receive_sms/', function(request, response) {
+    var from_number = request.body.From || request.query.From;
+    var to_number = request.body.To || request.query.To;
+    var text = request.body.Text || request.query.Text;
+    console.log('Message received - From: ', from_number, ', To: ', to_number, ', Text: ', text);
+    response.send("Message received");
+})
+
 // middleware to use for api requests and verify token by using jsonwebtoken.
 // app.use('/api', function(req, res, next) {
 //     console.log("Inside the function");

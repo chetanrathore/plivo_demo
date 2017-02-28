@@ -35,4 +35,9 @@ router.get('/api/livecall', trackCallCntrl.getLiveCall);
 
 router.get('/api/app', appCtrl.createApplication);
 
+router.get('/api/app/:appId', appCtrl.getApplicationById);
+
+router.put('/api/app/:appId', appCtrl.updateApplicationById);
+
+
 module.exports = router;
