@@ -50,8 +50,6 @@ function getInBoundSMSReport(req, res, next) {
         'message_direction': "inbound"
     };
     p.get_messages(params1, function (status, response) {
-        console.log('Status: ', status);
-        console.log('API Response:\n', response);
         return res.json({ status: status, data: response });
     });
 }
