@@ -29,6 +29,8 @@ function create(req, res, next) {
         .then(function (toUser) {
             param.dst = toUser.phoneNo;
             param.text = sms.smsText;
+            param.url = config.tmpServer+"/sms_status";
+            param.method = "POST";
             p.send_message(param, function (status, response) {
                     console.log('Status: ', status);
                     console.log('API Response:\n', response);

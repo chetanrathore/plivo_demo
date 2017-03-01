@@ -4,6 +4,6 @@ module.exports = {
 
   authId: 'MAZWI1OGZIYZBKYTVHMG',
   authToken: 'MWMyNzM1Y2RlMjY1MWQ0OTMzZWJjY2JmYTc5MTI1',
-
+  tmpServer: 'http://cdff9e07.ngrok.io',
   webPort: 3000
 };
