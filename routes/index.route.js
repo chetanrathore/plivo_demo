@@ -5,6 +5,7 @@ const smsRoute = require("./sms.route");
 
 const trackSmsCntrl = require('./../controllers/smstracking.controller');
 const trackCallCntrl = require('./../controllers/voicecall.controller');
+
 const appCtrl = require('./../controllers/application.plivo');
 
 //User routes
@@ -25,11 +26,17 @@ router.get('/api/inbound', trackSmsCntrl.getInBoundSMSReport);
 
 router.get('/api/makecall', trackCallCntrl.makeCall);
 
+// router.post('/api/makecall', trackCallCntrl.create);
+
+router.post('/api/makecall', trackCallCntrl.makeCall);
+
 router.get('/api/calllog', trackCallCntrl.getCallLog);
+
+router.get('/api/callfromdb', trackCallCntrl.getAll);
 
 router.get('/api/filteredcalllog', trackCallCntrl.getFilteredCallLog);
 
-router.get('/api/endcall', trackCallCntrl.testCallBack);
+//router.get('/api/endcall', trackCallCntrl.testCallBack);
 
 router.get('/api/livecall', trackCallCntrl.getLiveCall);
 
@@ -39,12 +46,16 @@ router.get('/api/app/:appId', appCtrl.getApplicationById);
 
 router.put('/api/app/:appId', appCtrl.updateApplicationById);
 
-router.get('/api/testcallback', trackCallCntrl.testCallBack);
-
-//router.get('/record_api/', trackCallCntrl.receiveCall);
-
-///router.get('/record_api_action/', trackCallCntrl.recordCall);
-
 router.post('/sms_status/', trackSmsCntrl.smsStatus);
+
+router.get('/api/smslogfromdb/', trackSmsCntrl.getAllSMSLogFromDB);
+
+router.post('/record_api/', trackCallCntrl.receiveCall);
+
+router.get('/record_api_action/', trackCallCntrl.recordCall);
+
+router.get('/api/recordlog/', trackCallCntrl.getCallRecordLogFromDB);
+
+router.get('/api/voicecalllog/', trackCallCntrl.getVoiceCallLogFromDB);
 
 module.exports = router;
