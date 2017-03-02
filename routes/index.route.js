@@ -39,5 +39,12 @@ router.get('/api/app/:appId', appCtrl.getApplicationById);
 
 router.put('/api/app/:appId', appCtrl.updateApplicationById);
 
+router.get('/api/testcallback', trackCallCntrl.testCallBack);
+
+//router.get('/record_api/', trackCallCntrl.receiveCall);
+
+///router.get('/record_api_action/', trackCallCntrl.recordCall);
+
+router.post('/sms_status/', trackSmsCntrl.smsStatus);
 
 module.exports = router;

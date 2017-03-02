@@ -16,6 +16,14 @@ var p = plivo.RestAPI({
     authToken: config.authToken
 });
 
+
+//SMS Status after send
+function smsStatus(req, res, next) {
+    console.log("SMS status");
+    console.log(req.body.Status);
+    console.log(req);
+}
+
 //Get Tracking report from plivo
 
 function getSMSReport(req, res, next) {
@@ -54,4 +62,4 @@ function getInBoundSMSReport(req, res, next) {
     });
 }
 
-module.exports = { getSMSReport, getOutBoundSMSReport, getInBoundSMSReport  };
+module.exports = { getSMSReport, getOutBoundSMSReport, getInBoundSMSReport, smsStatus  };
