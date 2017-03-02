@@ -8,6 +8,9 @@ var expressValidation = require("express-validation");
 const APIError = require("../helpers/APIError");
 const httpStatus = require('http-status');
 
+var plivo = require("plivo");
+var util = require("util");
+
 //Here configure the express
 var app = express();
 var server = require("http").Server(app);
@@ -19,98 +22,14 @@ server.listen(app.get('port'),function(){
     console.log('Server listing at port ' + server.address().port);
 });
 
-var plivo = require("plivo");
-var util = require("util");
-
-app.all('/record_api/', function (req, res) {
-    console.log("inside record call----");
-    var getdigits_action_url = config.tmpServer+"/record_api_action";//util.format("http://%s/record_api_action/", req.get('host'));
-    var params = {
-        'action': getdigits_action_url, // The URL to which the digits are sent.
-        'method': 'GET', // Submit to action URL using GET or POST.
-        'timeout': '7', // Time in seconds to wait to receive the first digit.
-        'numDigits': '1', // Maximum number of digits to be processed in the current operation.
-        'retries': '1', // Indicates the number of attempts the user is allowed to input digits
-        'redirect': 'false' // Redirect to action URL if true. If false, only request the URL and continue to next element.
-    };
-    var response = plivo.Response();
-    var getDigits = response.addGetDigits(params);
-    getDigits.addSpeak("hello from testing, Press 1 to record this call");
-
-    // Time to wait in seconds
-    params = {'length': "30"};
-    response.addWait(params);
-
-    console.log(response.toXML());
-    res.set({'Content-  Type': 'text/xml'});
-    res.send(response.toXML());
+app.get('/test', function (req, res) {
+    console.log(__dirname);
+    res.sendFile(__dirname + "/testcall.html");
 });
 
-app.all('/record_api_action/', function (req, res) {
-    var digit = req.query.Digits;
-    var call_uuid = req.query.CallUUID;
-    var p = plivo.RestAPI({
-        "authId": config.authId,
-        "authToken": config.authToken
-    });
-    if (digit === "1") {
-        // ID of the call
-        var params = {'call_uuid':call_uuid};
-        p.record(params, function (status, response) {
-            console.log(status);
-            console.log(response); //here get the url of mp3 file.
-        })
-    } else
-        console.log("Wrong Input");
-});
-
-
-/*
-app.all('/record_api/', function (req, res) {
-    console.log("inside record call----");
-    var getdigits_action_url = config.tmpServer+"/record_api_action";//util.format("http://%s/record_api_action/", req.get('host'));
-    var params = {
-        'action': getdigits_action_url, // The URL to which the digits are sent.
-        'method': 'GET', // Submit to action URL using GET or POST.
-        'timeout': '7', // Time in seconds to wait to receive the first digit.
-        'numDigits': '1', // Maximum number of digits to be processed in the current operation.
-        'retries': '1', // Indicates the number of attempts the user is allowed to input digits
-        'redirect': 'false' // Redirect to action URL if true. If false, only request the URL and continue to next element.
-    };
-    var response = plivo.Response();
-    var getDigits = response.addGetDigits(params);
-    getDigits.addSpeak("hello from testing, Press 1 to record this call");
-
-    // Time to wait in seconds
-    params = {'length': "30"};
-    response.addWait(params);
-
-    console.log(response.toXML());
-    res.set({'Content-Type': 'text/xml'});
-    res.send(response.toXML());
-});
-
-app.all('/record_api_action/', function (req, res) {
-    var digit = req.query.Digits;
-    var call_uuid = req.query.CallUUID;
-    var p = plivo.RestAPI({
-        "authId": config.authId,
-        "authToken": config.authToken
-    });
-    if (digit === "1") {
-        // ID of the call
-        var params = {'call_uuid':call_uuid};
-        p.record(params, function (status, response) {
-            console.log(status);
-            console.log(response); //here get the url of mp3 file.
-        })
-    } else
-        console.log("Wrong Input");
-});
-*/
 app.all('/hangup_api/', function (req, res) {
         console.log("Call end");
-        console.log(req);
+        //console.log(req);
 });
 
 app.all('/receive_sms/', function(req, res) {

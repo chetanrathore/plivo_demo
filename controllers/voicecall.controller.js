@@ -1,6 +1,9 @@
-/**
- * Created by LaNet on 2/25/17.
- */
+const VoiceCall = require("../models/voicecall.model");
+const APIError = require("../helpers/APIError");
+const mongoose = require("mongoose");
+const User = require("../models/user.model");
+const VoiceCallLog = require("../models/voicecalllog.model");
+const RecordVoiceCall = require("../models/callrecord.model");
 
 //For SMS
 var config = require('./../config/config');
@@ -11,14 +14,71 @@ var p = plivo.RestAPI({
     authToken: config.authToken
 });
 
+//make call and store in db
+function create(req, res, next) {
+    var voiceCall = new VoiceCall();
+    voiceCall.fromUser = mongoose.Types.ObjectId(req.body.fromUser);
+    voiceCall.toUser = mongoose.Types.ObjectId(req.body.toUser);
+    var param = {};
+
+    User.getByUserId(voiceCall.fromUser)
+        .then(function (fromUser) {
+            param.from = "18478335677"//"Test_PLV"//fromUser.phoneNo;
+            return User.getByUserId(voiceCall.toUser)
+        })
+        .then(function (toUser) {
+            console.log("---------------------");
+            console.log(toUser.phoneNo);
+            //param.to = "917878499987"
+            param.to = "919687667944"////toUser.phoneNo;
+            param.answer_url = config.tmpServer+"/record_api/";
+            param.answer_method = "POST";
+            param.hangup_url = config.tmpServer+"/hangup_api/";
+            p.make_call(param, function(status, response) {
+                if (status >= 200 && status < 300) {
+                    console.log('Successfully made call request.');
+                } else {
+                    console.log('Oops! Something went wrong.');
+                }
+                voiceCall.status = status;
+                voiceCall.apiId = response['api_id'] || "";
+                voiceCall.callUUId = response["request_uuid"] || ""
+                voiceCall.message = response["message"] || ""
+                voiceCall.save();
+                res.json({ status: status, response: response });
+            });
+        })
+        .then(function (voiceCall) {
+            //return res.json({message: "call detail added."});
+        })
+        .catch(function (err) {
+            return next(err);
+        })
+}
+
+//get call detail from db
+function getAll(req, res, next) {
+    VoiceCall.find()
+        .populate('fromUser')
+        .populate('toUser')
+        .sort({ createdOn: -1 })
+        .exec()
+        .then(function (voicecall) {
+            return res.json(voicecall);
+        })
+        .catch(function (err) {
+            return next(err);
+        })
+}
+
 //make a call
 
 function makeCall(req, res, next) {
     var params = {
         from: '18064100731',
-        to: '917878499987',
+        to: '919687667944',
         answer_url: config.tmpServer+"/record_api/",
-        answer_method : "GET",
+        answer_method : "POST",
         hangup_url: config.tmpServer+"/hangup_api/",      //  callback_url : "http://6b36f2c5.ngrok.io/api/testcallback",
      //  callback_method : "GET" // The method used to notify the callback_url.
     };
@@ -32,13 +92,7 @@ function makeCall(req, res, next) {
     });
 }
 
-function testCallBack(req, res, next) {
-    console.log(req);
-    //console.log(req.body);
-    console.log("Call method");
-    res.send("End call");
-}
-
+//from Plivo
 function getCallLog(req, res, next) {
     var params = { };
     p.get_cdrs(params, function (status, response) {
@@ -71,8 +125,27 @@ function getLiveCall(req, res, next) {
 
 //call when receive call by user
 function receiveCall(req, res) {
-    console.log("inside record call receive");
-    var getdigits_action_url = config.tmpServer + "record_api_action/";//util.format("http://%s/record_api_action/", req.get('host'));
+    console.log("Call received");
+    var voiceCallLog = new VoiceCallLog();
+    voiceCallLog.from = req.query.From;
+    voiceCallLog.to = req.query.To;
+    voiceCallLog.direction = req.query.Direction;
+    voiceCallLog.callStatus = req.query.CallStatus;
+    voiceCallLog.callUUId = req.query.CallUUID;
+    voiceCallLog.event = req.query.Event;
+    voiceCallLog.billRate = req.query.BillRate;
+    voiceCallLog.aLegUUID = req.query.ALegUUID;
+    voiceCallLog.aLegRequestUUId = req.query.ALegRequestUUID;
+    voiceCallLog.requestUUId = req.query.RequestUUID;
+    voiceCallLog.save()
+        .then(function (voiceCallLog) {
+            console.log("log added");
+        }).catch(function (err) {
+        console.log("error when add voiceCallLog");
+        //return next(err);
+    })
+    console.log(req.query);
+    var getdigits_action_url = config.tmpServer+"/record_api_action";//util.format("http://%s/record_api_action/", req.get('host'));
     var params = {
         'action': getdigits_action_url, // The URL to which the digits are sent.
         'method': 'GET', // Submit to action URL using GET or POST.
@@ -86,44 +159,67 @@ function receiveCall(req, res) {
     getDigits.addSpeak("hello from testing, Press 1 to record this call");
 
     // Time to wait in seconds
-    params = {'length': "30"};
+    params = {'length': "20"};
     response.addWait(params);
 
     console.log(response.toXML());
     res.set({'Content-Type': 'text/xml'});
     res.send(response.toXML());
+
 }
 
-//User action after recive the call
+//User action after receive the call
 function recordCall(req, res) {
-    console.log("inside call record");
-    console.log(req);
-    console.log(req.query.Digits);
-    // Plivo passes the digit captured by the xml produced by /record_api/ function as the parameter Digits
+    console.log("action called");
+    console.log(req.query);
     var digit = req.query.Digits;
-    // CallUUID parameter is automatically added by Plivo when processing the xml produced by /record_api/ function
     var call_uuid = req.query.CallUUID;
-    var call_status = req.query.CallStatus;
-    console.log("=============**********================");
+    var p = plivo.RestAPI({
+        "authId": config.authId,
+        "authToken": config.authToken
+    });
     console.log(call_uuid);
-    console.log(digit);
-
-    // var p = plivo.RestAPI({
-    //     "authId": config.authId,
-    //     "authToken": config.authToken
-    // });
-
     if (digit === "1") {
         // ID of the call
-        var params = {'call_uuid': call_uuid};
-        // Here we make the actual API call and store the response
-        var response = p.record(params);
-        p.record(params, function (response) {
-            console.log("End record");
-            console.log(response);
+        var params = {'call_uuid':call_uuid};
+        p.record(params, function (status, response) {
+            if (status == 202) {
+                var record = new RecordVoiceCall();
+                record.callUUId = call_uuid;
+                record.apiId = response['api_id'] || "";
+                record.recordingId = response['recording_id'] || "";
+                record.message = response['message'] || "";
+                record.url = response['url'] || "";
+                record.save();
+                console.log("Call recorded");
+                console.log(status);
+                console.log(response); //here get the url of mp3 file.
+            }
         })
     } else
         console.log("Wrong Input");
 }
 
-module.exports = { makeCall, getCallLog, getFilteredCallLog, testCallBack, getLiveCall, receiveCall, recordCall};
+//From database
+function getCallRecordLogFromDB(req, res, next) {
+    RecordVoiceCall.find().sort({ createdOn: -1 })
+        .then(function (smsLog) {
+            return res.json(smsLog);
+        })
+        .catch(function (err) {
+            return next(err);
+        })
+}
+
+function getVoiceCallLogFromDB(req, res, next) {
+    VoiceCallLog.find().sort({ createdOn: -1 })
+        .then(function (smsLog) {
+            return res.json(smsLog);
+        })
+        .catch(function (err) {
+            return next(err);
+        })
+}
+
+module.exports = {create, getAll, makeCall, getCallLog, getFilteredCallLog,
+    getLiveCall, receiveCall, recordCall, getCallRecordLogFromDB, getVoiceCallLogFromDB};
