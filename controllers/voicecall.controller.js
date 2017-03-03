@@ -30,10 +30,11 @@ function create(req, res, next) {
             console.log("---------------------");
             console.log(toUser.phoneNo);
             //param.to = "917878499987"
-            param.to = "919687667944"////toUser.phoneNo;
+          //  param.to = "919687667944"////toUser.phoneNo;
+            param.to = "917878499987"////toUser.phoneNo;
             param.answer_url = config.tmpServer+"/record_api/";
             param.answer_method = "POST";
-            param.hangup_url = config.tmpServer+"/hangup_api/";
+            //param.hangup_url = config.tmpServer+"/hangup_api/";
             p.make_call(param, function(status, response) {
                 if (status >= 200 && status < 300) {
                     console.log('Successfully made call request.');
@@ -76,7 +77,7 @@ function getAll(req, res, next) {
 function makeCall(req, res, next) {
     var params = {
         from: '18064100731',
-        to: '919687667944',
+        to: '917878499987',
         answer_url: config.tmpServer+"/record_api/",
         answer_method : "POST",
         hangup_url: config.tmpServer+"/hangup_api/",      //  callback_url : "http://6b36f2c5.ngrok.io/api/testcallback",
@@ -125,6 +126,7 @@ function getLiveCall(req, res, next) {
 
 //call when receive call by user
 function receiveCall(req, res) {
+    console.log(req);
     console.log("Call received");
     var voiceCallLog = new VoiceCallLog();
     voiceCallLog.from = req.query.From;
@@ -159,7 +161,7 @@ function receiveCall(req, res) {
     getDigits.addSpeak("hello from testing, Press 1 to record this call");
 
     // Time to wait in seconds
-    params = {'length': "20"};
+    params = {'length': "30"};
     response.addWait(params);
 
     console.log(response.toXML());
@@ -167,6 +169,10 @@ function receiveCall(req, res) {
     res.send(response.toXML());
 
 }
+
+// <Response><GetDigits action="http://61caab23.ngrok.io/record_api_action" method="GET" timeout="7" numDigits="1" retries="1" redirect="false">
+//     <Speak>hello from testing, Press 1 to record this call</Speak>
+// </GetDigits><Wait length="20"/></Response>
 
 //User action after receive the call
 function recordCall(req, res) {

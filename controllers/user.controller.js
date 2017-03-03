@@ -26,6 +26,7 @@ function create(req, res, next) {
 }
 
 function getAll(req, res, next) {
+    console.log("user call");
     User.find().sort({ createdOn: -1 })
         .then(function (user) {
             return res.json(user);
