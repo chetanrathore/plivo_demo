@@ -26,9 +26,9 @@ router.get('/api/inbound', trackSmsCntrl.getInBoundSMSReport);
 
 router.get('/api/makecall', trackCallCntrl.makeCall);
 
-// router.post('/api/makecall', trackCallCntrl.create);
+router.post('/api/makecall', trackCallCntrl.create);
 
-router.post('/api/makecall', trackCallCntrl.makeCall);
+// router.post('/api/makecall', trackCallCntrl.makeCall);
 
 router.get('/api/calllog', trackCallCntrl.getCallLog);
 

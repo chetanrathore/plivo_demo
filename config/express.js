@@ -11,10 +11,12 @@ const httpStatus = require('http-status');
 var plivo = require("plivo");
 var util = require("util");
 
+var cors = require("cors");
 //Here configure the express
 var app = express();
 var server = require("http").Server(app);
 
+app.use(cors());
 //Listening port
 app.set('port',process.env.PORT || config.webPort);
 
@@ -26,6 +28,17 @@ app.get('/test', function (req, res) {
     console.log(__dirname);
     res.sendFile(__dirname + "/testcall.html");
 });
+
+app.all('/make_call/', function(req, res) {
+    console.log("receive sms");
+    var from_number = req.body.From || req.query.From;
+    var to_number = req.body.To || req.query.To;
+    var text = req.body.Text || req.query.Text;
+    console.log('Message received - From: ', from_number, ', To: ', to_number, ', Text: ', text);
+    response.send("Message received");
+});
+
+
 
 app.all('/hangup_api/', function (req, res) {
         console.log("Call end");
@@ -40,6 +53,8 @@ app.all('/receive_sms/', function(req, res) {
     console.log('Message received - From: ', from_number, ', To: ', to_number, ', Text: ', text);
     response.send("Message received");
 });
+
+
 
 // middleware to use for api requests and verify token by using jsonwebtoken.
 // app.use('/api', function(req, res, next) {
