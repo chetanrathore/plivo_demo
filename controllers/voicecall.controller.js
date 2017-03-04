@@ -227,5 +227,38 @@ function getVoiceCallLogFromDB(req, res, next) {
         })
 }
 
+
+function makeCallUrl(req, res, next) {
+    var getdigits_action_url = config.tmpServer+"/record_api_action";//util.format("http://%s/record_api_action/", req.get('host'));
+    var params = {
+        'action': getdigits_action_url, // The URL to which the digits are sent.
+        'method': 'GET', // Submit to action URL using GET or POST.
+        'timeout': '7', // Time in seconds to wait to receive the first digit.
+        'numDigits': '1', // Maximum number of digits to be processed in the current operation.
+        'retries': '1', // Indicates the number of attempts the user is allowed to input digits
+        'redirect': 'false' // Redirect to action URL if true. If false, only request the URL and continue to next element.
+    };
+    var response = plivo.Response();
+
+    var param1 = {
+        'callerId': "+917069592747",
+        'dialMusic': 'real',
+    };
+
+    var dial = response.addDial(param1);
+    dial.addNumber("917069592747");
+
+    //var getDigits = response.addGetDigits(params);
+    //getDigits.addSpeak("hello from testing, Press 1 to record this call");
+
+    // Time to wait in seconds
+    params = {'length': "30"};
+    response.addWait(params);
+
+    console.log(response.toXML());
+    res.set({'Content-Type': 'text/xml'});
+    res.send(response.toXML());
+}
+
 module.exports = {create, getAll, makeCall, getCallLog, getFilteredCallLog,
     getLiveCall, receiveCall, recordCall, getCallRecordLogFromDB, getVoiceCallLogFromDB};

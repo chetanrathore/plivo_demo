@@ -29,16 +29,35 @@ app.get('/test', function (req, res) {
     res.sendFile(__dirname + "/testcall.html");
 });
 
+
 app.all('/make_call/', function(req, res) {
-    console.log("receive sms");
-    var from_number = req.body.From || req.query.From;
-    var to_number = req.body.To || req.query.To;
-    var text = req.body.Text || req.query.Text;
-    console.log('Message received - From: ', from_number, ', To: ', to_number, ', Text: ', text);
-    response.send("Message received");
+
+    console.log(req);
+
+    var response = plivo.Response();
+    var record_url = config.tmpServer+"/record_api";//util.format("http://%s/record_api_action/", req.get('host'));
+
+    var param1 = {
+        'action': record_url,
+        'method': 'POST',
+        'callerId': "917069592747",
+        'callerName':"Test VIF",
+        'dialMusic': 'real',
+    };
+
+    var dial = response.addDial(param1);
+    dial.addNumber("917069592747");
+
+
+    // Time to wait in seconds
+    params = {'length': "30"};
+    response.addWait(params);
+
+    console.log(response.toXML());
+    res.set({'Content-Type': 'text/xml'});
+    res.send(response.toXML());
+
 });
-
-
 
 app.all('/hangup_api/', function (req, res) {
         console.log("Call end");
