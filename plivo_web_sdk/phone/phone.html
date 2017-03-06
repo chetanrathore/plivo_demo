@@ -43,7 +43,6 @@
 //                    alert(data);
 //                }
 //            });
-
             function webrtcNotSupportedAlert() {
                 $('#txtStatus').text("");
                 alert("Your browser doesn't support WebRTC. You need Chrome 25 to use this demo");
@@ -104,7 +103,6 @@
                 dialpadShow();
             }
 
-
             function onReady() {
                 console.log("onReady...");
                 $('#status_txt').text('Login');
@@ -113,9 +111,7 @@
 
             function login() {
              //   Plivo.conn.login($("#username").val(), $("#password").val());
-                Plivo.conn.login('viewinfocus170224104215', 'lanetteam1');//viewinfocus170224104215//testcall1170301071206
-                alert(Plivo);
-                alert(Plivo.conn);
+                Plivo.conn.login('testcall1170301071206', 'lanetteam1');//viewinfocus170224104215//testcall1170301071206
             }
 
             function logout() {
@@ -147,6 +143,16 @@
             }
 
             function onCallAnswered() {
+
+//                var url = "http://localhost:3000/api/livecall";
+//                var dest = $("#to").val();
+//                $.get( url, { 'from': 'userid','to': dest,} )
+//                        .done(function( data ) {
+//                            alert( "Data Loaded: " + data );
+//                        })
+//                        .fail(function() {
+//                            alert( "error" );
+//                        });
 
                 console.log('onCallAnswered');
                 callAnsweredUI();
@@ -251,11 +257,11 @@
                 console.log("answering")
                 $('#status_txt').text('Answering....');
                 Plivo.conn.answer();
-                callAnsweredUI()
+                callAnsweredUI();
             }
 
             function reject() {
-                callUI()
+                callUI();
                 Plivo.conn.reject();
             }
 

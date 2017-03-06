@@ -30,27 +30,35 @@ app.get('/test', function (req, res) {
 });
 
 app.all('/make_call/', function(req, res) {
+    console.log(res);
+    console.log("---Make Call----");
+    console.log(req);
     var response = plivo.Response();
+
+    var call_url = config.tmpServer+"/call_action";//util.format("http://%s/record_api_action/", req.get('host'));
+    var param1 = {
+        'action': call_url,
+        'method':'POST',
+        'callerId': "18064100731",
+        'callerName':"Test VIF",
+        'dialMusic': 'real',
+        'redirect': 'false',
+        'callbackUrl' : config.tmpServer + "callback_action"
+    };
+    var dial = response.addDial(param1);
+    dial.addNumber("917069592747");
+
     var recordParam = {
-        'action': config.tmpServer+"/get_recording/",
+        'action': config.tmpServer+"/get_recording",
+        'method':'POST',
         'startOnDialAnswer': 'true',
         'redirect': 'false',
         'fileFormat':'mp3',
-        'callbackUrl': config.tmpServer+"/callback_action",
-        'transcriptionUrl': config.tmpServer+"/calldetail_action",
+        //'callbackUrl': config.tmpServer+"/callback_action",
+        //'transcriptionUrl': config.tmpServer+"/calldetail_action",
     }
     response.addRecord(recordParam);
-    response.addSpeak("Hello from Testing View in focus.");
-
-    var record_url = config.tmpServer+"/call_action";//util.format("http://%s/record_api_action/", req.get('host'));
-    var param1 = {
-       'callerId': "18478335677",
-       'callerName':"Test VIF",
-       'dialMusic': 'real',
-    };
-
-    var dial = response.addDial(param1);
-    dial.addNumber("917069592747");
+    //response.addSpeak("Hello from Testing View in focus.");
 
     console.log(response.toXML());
     res.set({'Content-Type': 'text/xml'});
@@ -58,11 +66,21 @@ app.all('/make_call/', function(req, res) {
 
 });
 
-app.all('/get_recording', function (req, res) {
+    app.post('/get_recording', function (req, res) {
     console.log("--------------RECORDING--------------");
     console.log(req.query);
     console.log(req.body);
     console.log(req.params);
+    console.log(res);
+});
+
+app.post('/call_action', function (req, res) {
+    console.log("-----------Callback action-----------------");
+    console.log(req.query);
+    console.log(req.body);
+    console.log(req.params);
+    console.log(res);
+
 });
 
 app.all('/callback_action', function (req, res) {
@@ -70,6 +88,8 @@ app.all('/callback_action', function (req, res) {
     console.log(req.query);
     console.log(req.body);
     console.log(req.params);
+    console.log(res);
+
 });
 
 app.all('/calldetail_action', function (req, res) {
@@ -81,6 +101,7 @@ app.all('/calldetail_action', function (req, res) {
 
 app.all('/hangup_api/', function (req, res) {
     console.log("--------------Call End--------------");
+    console.log(req);
     //console.log(req);
 });
 
@@ -92,8 +113,6 @@ app.all('/receive_sms/', function(req, res) {
     console.log('Message received - From: ', from_number, ', To: ', to_number, ', Text: ', text);
     response.send("Message received");
 });
-
-
 
 // middleware to use for api requests and verify token by using jsonwebtoken.
 // app.use('/api', function(req, res, next) {

@@ -40,6 +40,10 @@ router.get('/api/filteredcalllog', trackCallCntrl.getFilteredCallLog);
 
 router.get('/api/livecall', trackCallCntrl.getLiveCall);
 
+router.get('/api/calldetailyid/:callId', trackCallCntrl.getDetailByCallId);
+
+router.get('/api/recordcallbyid/:callId', trackCallCntrl.recordCallbyCallId);
+
 router.get('/api/app', appCtrl.createApplication);
 
 router.get('/api/app/:appId', appCtrl.getApplicationById);

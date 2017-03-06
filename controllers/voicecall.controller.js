@@ -31,10 +31,15 @@ function create(req, res, next) {
             console.log(toUser.phoneNo);
             //param.to = "917878499987"
           //  param.to = "919687667944"////toUser.phoneNo;
-            param.to = "917878499987"////toUser.phoneNo;
+            param.to = "917069592747"////toUser.phoneNo;
             param.answer_url = config.tmpServer+"/record_api/";
             param.answer_method = "POST";
             //param.hangup_url = config.tmpServer+"/hangup_api/";
+            param.machine_detection = 'true';
+            param.machine_detection_time = 'true';
+            param.machine_detection = 'true';
+            param.machine_detection = 'true';
+
             p.make_call(param, function(status, response) {
                 if (status >= 200 && status < 300) {
                     console.log('Successfully made call request.');
@@ -77,7 +82,7 @@ function getAll(req, res, next) {
 function makeCall(req, res, next) {
     var params = {
         from: '18064100731',
-        to: '917878499987',
+        to: '917069592747',
         answer_url: config.tmpServer+"/record_api/",
         answer_method : "POST",
         hangup_url: config.tmpServer+"/hangup_api/",      //  callback_url : "http://6b36f2c5.ngrok.io/api/testcallback",
@@ -112,17 +117,50 @@ function getFilteredCallLog(req, res, next) {
 
     p.get_cdrs(params, function (status, response) {
         res.json({ status: status, response: response });
+
     });
 }
 
 function getLiveCall(req, res, next) {
+    var from = req.query.from;
+    var to = req.query.to;
+
+    console.log(req.query);
     var params = {
         'status': 'live'
     };
     p.get_live_calls(params, function (status, response) {
+        let calls = response['callls'];
+        if(calls.length > 0){
+
+        }
+        res.json({ status: status, response: response });
+
+
+    });
+}
+function getDetailByCallId(req, res, next) {
+    var params = {
+        'call_uuid': "aa0f7c92-0256-11e7-ad6b-3db91c35bc11"//req.params.callId, // The ID of the call
+    };
+    p.get_cdr(params, function (status, response) {
+        console.log('Status: ', status);
+        console.log('API Response:\n', response);
         res.json({ status: status, response: response });
     });
 }
+
+//User action after receive the call
+function recordCallbyCallId(req, res) {
+    console.log("action called");
+    console.log(req.query);
+    var call_uuid = req.query.CallUUID;
+    var params = {'call_uuid': call_uuid};
+    p.record(params, function (status, response) {
+        res.json({ status: status, response: response });
+    })
+}
+
 
 //call when receive call by user
 function receiveCall(req, res) {
@@ -228,4 +266,4 @@ function getVoiceCallLogFromDB(req, res, next) {
 }
 
 module.exports = {create, getAll, makeCall, getCallLog, getFilteredCallLog,
-    getLiveCall, receiveCall, recordCall, getCallRecordLogFromDB, getVoiceCallLogFromDB};
+    getLiveCall, getDetailByCallId, recordCallbyCallId, receiveCall, recordCall, getCallRecordLogFromDB, getVoiceCallLogFromDB};
