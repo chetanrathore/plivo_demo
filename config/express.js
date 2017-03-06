@@ -29,29 +29,28 @@ app.get('/test', function (req, res) {
     res.sendFile(__dirname + "/testcall.html");
 });
 
-
 app.all('/make_call/', function(req, res) {
-
-    console.log(req);
-
     var response = plivo.Response();
-    var record_url = config.tmpServer+"/record_api";//util.format("http://%s/record_api_action/", req.get('host'));
+    var recordParam = {
+        'action': config.tmpServer+"/get_recording/",
+        'startOnDialAnswer': 'true',
+        'redirect': 'false',
+        'fileFormat':'mp3',
+        'callbackUrl': config.tmpServer+"/callback_action",
+        'transcriptionUrl': config.tmpServer+"/calldetail_action",
+    }
+    response.addRecord(recordParam);
+    response.addSpeak("Hello from Testing View in focus.");
 
+    var record_url = config.tmpServer+"/call_action";//util.format("http://%s/record_api_action/", req.get('host'));
     var param1 = {
-        'action': record_url,
-        'method': 'POST',
-        'callerId': "917069592747",
-        'callerName':"Test VIF",
-        'dialMusic': 'real',
+       'callerId': "18478335677",
+       'callerName':"Test VIF",
+       'dialMusic': 'real',
     };
 
     var dial = response.addDial(param1);
     dial.addNumber("917069592747");
-
-
-    // Time to wait in seconds
-    params = {'length': "30"};
-    response.addWait(params);
 
     console.log(response.toXML());
     res.set({'Content-Type': 'text/xml'});
@@ -59,9 +58,30 @@ app.all('/make_call/', function(req, res) {
 
 });
 
+app.all('/get_recording', function (req, res) {
+    console.log("--------------RECORDING--------------");
+    console.log(req.query);
+    console.log(req.body);
+    console.log(req.params);
+});
+
+app.all('/callback_action', function (req, res) {
+    console.log("-----------Callback action-----------------");
+    console.log(req.query);
+    console.log(req.body);
+    console.log(req.params);
+});
+
+app.all('/calldetail_action', function (req, res) {
+    console.log("--------Call detail--------------------");
+    console.log(req);
+    console.log(req.params);
+});
+
+
 app.all('/hangup_api/', function (req, res) {
-        console.log("Call end");
-        //console.log(req);
+    console.log("--------------Call End--------------");
+    //console.log(req);
 });
 
 app.all('/receive_sms/', function(req, res) {
