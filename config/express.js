@@ -20,6 +20,9 @@ app.use(cors());
 //Listening port
 app.set('port',process.env.PORT || config.webPort);
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 server.listen(app.get('port'),function(){
     console.log('Server listing at port ' + server.address().port);
 });
@@ -27,82 +30,6 @@ server.listen(app.get('port'),function(){
 app.get('/test', function (req, res) {
     console.log(__dirname);
     res.sendFile(__dirname + "/testcall.html");
-});
-
-app.all('/make_call/', function(req, res) {
-    console.log(res);
-    console.log("---Make Call----");
-    console.log(req);
-    var response = plivo.Response();
-
-    var call_url = config.tmpServer+"/call_action";//util.format("http://%s/record_api_action/", req.get('host'));
-    var param1 = {
-        'action': call_url,
-        'method':'POST',
-        'callerId': "18064100731",
-        'callerName':"Test VIF",
-        'dialMusic': 'real',
-        'redirect': 'false',
-        'callbackUrl' : config.tmpServer + "callback_action"
-    };
-    var dial = response.addDial(param1);
-    dial.addNumber("917069592747");
-
-    var recordParam = {
-        'action': config.tmpServer+"/get_recording",
-        'method':'POST',
-        'startOnDialAnswer': 'true',
-        'redirect': 'false',
-        'fileFormat':'mp3',
-        //'callbackUrl': config.tmpServer+"/callback_action",
-        //'transcriptionUrl': config.tmpServer+"/calldetail_action",
-    }
-    response.addRecord(recordParam);
-    //response.addSpeak("Hello from Testing View in focus.");
-
-    console.log(response.toXML());
-    res.set({'Content-Type': 'text/xml'});
-    res.send(response.toXML());
-
-});
-
-    app.post('/get_recording', function (req, res) {
-    console.log("--------------RECORDING--------------");
-    console.log(req.query);
-    console.log(req.body);
-    console.log(req.params);
-    console.log(res);
-});
-
-app.post('/call_action', function (req, res) {
-    console.log("-----------Callback action-----------------");
-    console.log(req.query);
-    console.log(req.body);
-    console.log(req.params);
-    console.log(res);
-
-});
-
-app.all('/callback_action', function (req, res) {
-    console.log("-----------Callback action-----------------");
-    console.log(req.query);
-    console.log(req.body);
-    console.log(req.params);
-    console.log(res);
-
-});
-
-app.all('/calldetail_action', function (req, res) {
-    console.log("--------Call detail--------------------");
-    console.log(req);
-    console.log(req.params);
-});
-
-
-app.all('/hangup_api/', function (req, res) {
-    console.log("--------------Call End--------------");
-    console.log(req);
-    //console.log(req);
 });
 
 app.all('/receive_sms/', function(req, res) {
@@ -132,9 +59,6 @@ app.all('/receive_sms/', function(req, res) {
 //         res.status(403).send({ success: false, message: "Authenticate token required."});
 //     }
 // });
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
 //all route assign here
 app.use('/',apiRouter);

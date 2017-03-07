@@ -8,6 +8,8 @@ const trackCallCntrl = require('./../controllers/voicecall.controller');
 
 const appCtrl = require('./../controllers/application.plivo');
 
+const plivoCtrl =  require('./../controllers/plivovoicecallapi.controller.js');
+
 //User routes
 router.use('/api/user', userRoute);
 
@@ -28,15 +30,11 @@ router.get('/api/makecall', trackCallCntrl.makeCall);
 
 router.post('/api/makecall', trackCallCntrl.create);
 
-// router.post('/api/makecall', trackCallCntrl.makeCall);
-
 router.get('/api/calllog', trackCallCntrl.getCallLog);
 
 router.get('/api/callfromdb', trackCallCntrl.getAll);
 
 router.get('/api/filteredcalllog', trackCallCntrl.getFilteredCallLog);
-
-//router.get('/api/endcall', trackCallCntrl.testCallBack);
 
 router.get('/api/livecall', trackCallCntrl.getLiveCall);
 
@@ -61,5 +59,15 @@ router.get('/record_api_action/', trackCallCntrl.recordCall);
 router.get('/api/recordlog/', trackCallCntrl.getCallRecordLogFromDB);
 
 router.get('/api/voicecalllog/', trackCallCntrl.getVoiceCallLogFromDB);
+
+//For Plivo web sdk
+
+router.post('/make_call/', plivoCtrl.makeCall);
+
+router.post('/get_recording', plivoCtrl.getRecording);
+
+router.post('/call_action', plivoCtrl.callAction);
+
+router.post('/hangup_call/', plivoCtrl.hangupCall);
 
 module.exports = router;
