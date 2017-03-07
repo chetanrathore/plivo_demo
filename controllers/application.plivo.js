@@ -33,7 +33,7 @@ function createApplication(req, res, next) {
 function getApplicationById(req, res, next) {
     var params = {
         'app_id': req.params.appId
-    }
+    };
     p.get_application(params, function (status, response) {
         return res.json({ status: status, data: response });
     });
