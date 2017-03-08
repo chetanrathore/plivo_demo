@@ -16,5 +16,4 @@ router.route('/UserMessage/:userId')
 
     .get(smsCtrl.getAllSMSByUser);
 
-
 module.exports = router;

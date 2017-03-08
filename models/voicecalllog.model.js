@@ -3,9 +3,6 @@
  */
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var boom = require("boom");
-const APIError = require("./../helpers/APIError");
-const httpStatus = require('http-status');
 
 const VoiceCallLog = new Schema({
     callUUId: {

@@ -17,6 +17,9 @@ const PlivoRecordCallLog = new Schema({
     to: {
         type: String,
     },
+    recordURL: {
+        type: String,
+    },
     recordFile: {
         type: String,
     },
@@ -39,6 +42,13 @@ const PlivoRecordCallLog = new Schema({
         type: String,
     },
     callStatus: {
+        type: String,
+    },
+    isUpdateFromPlivo: {
+        type: Boolean,
+        default: false,
+    },
+    conferenceName: {
         type: String,
     },
     createdOn: {

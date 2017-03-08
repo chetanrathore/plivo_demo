@@ -5,6 +5,7 @@
 var config = require('./../config/config');
 var plivo = require("plivo");
 var util = require("util");
+var plivocallog = require('./plivovoicecall.controller');
 
 //Call by plivo endpoint when the call is fired as answerurl
 /**
@@ -16,13 +17,14 @@ var util = require("util");
 function makeCall(req, res, next) {
 
     console.log("---Make Call----");
-    // console.log(JSON.stringify(req.body));
-
-    console.log(JSON.stringify(req.body.Direction));
+    console.log(req.body.Direction);
+    console.log(JSON.stringify(req.body));
+    plivocallog.create(req, res, next);
+    // console.log(JSON.stringify(req.body.Direction));
     var response = plivo.Response();
 
     var recordParam = {
-        'action': config.tmpServer+"/get_recording",
+        'action': config.tmpServer+"/get_recording/",
         'method':'POST',
         'startOnDialAnswer': 'true',
         'redirect': 'false',
@@ -31,7 +33,7 @@ function makeCall(req, res, next) {
     response.addRecord(recordParam);
     //util.format("http://%s/record_api_action/", req.get('host'));
     var param1 = {
-        'action': config.tmpServer+"/call_action",
+        'action': config.tmpServer+"/call_action/",
         'method':'POST',
         'callerId': "18064100731",
         'callerName':"Test VIF",
@@ -53,7 +55,7 @@ function makeCall(req, res, next) {
  * @param res
  * @param next
  */
-function getRecording(req, res, next, next) {
+function getRecording(req, res, next) {
     console.log("--------------RECORDING--------------");
     console.log(JSON.stringify(req.body));
 }
@@ -64,7 +66,7 @@ function getRecording(req, res, next, next) {
  * @param res
  * @param next
  */
-function callAction(req, res, next, next) {
+function callAction(req, res, next) {
     console.log("-----------Call action-----------------");
     console.log(JSON.stringify(req.body));
 }
@@ -77,6 +79,7 @@ function callAction(req, res, next, next) {
 function hangupCall(req, res, next) {
     console.log("--------------Call End--------------");
     console.log(JSON.stringify(req.body));
+    plivocallog.update(req, res, next);
     var response = plivo.Response();
     var hangup_params = {
         'reason': 'rejected'
@@ -85,20 +88,6 @@ function hangupCall(req, res, next) {
     res.writeHead(200, {'Content-Type': 'text/xml'});
     res.end(response.toXML());
 }
-
-// Database operation
-function addVoiceLog(req, res, next) {
-
-}
-
-function updateVoiceLog(req, res, next) {
-
-}
-
-function getByCallerUUId(req, res, next) {
-
-}
-
 
 
 module.exports = { makeCall, getRecording, callAction, hangupCall }
