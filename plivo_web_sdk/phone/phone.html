@@ -34,15 +34,6 @@
 
         <script type="text/javascript">
 
-//            var url = "http://localhost:3000/api/user";
-//            $.ajax({
-//                url: url,
-//                type: 'GET',
-//                success: function (data) {
-//                    console.log(data)
-//                    alert(data);
-//                }
-//            });
             function webrtcNotSupportedAlert() {
                 $('#txtStatus').text("");
                 alert("Your browser doesn't support WebRTC. You need Chrome 25 to use this demo");
@@ -144,16 +135,6 @@
 
             function onCallAnswered() {
 
-//                var url = "http://localhost:3000/api/livecall";
-//                var dest = $("#to").val();
-//                $.get( url, { 'from': 'userid','to': dest,} )
-//                        .done(function( data ) {
-//                            alert( "Data Loaded: " + data );
-//                        })
-//                        .fail(function() {
-//                            alert( "error" );
-//                        });
-
                 console.log('onCallAnswered');
                 callAnsweredUI();
                 $('#status_txt').text('Call Answered');
@@ -175,20 +156,7 @@
                     var dest = $("#to").val();
                     if (isNotEmpty(dest)) {
                         $('#status_txt').text('Calling..');
-
                         Plivo.conn.call(dest);
-
-//                        $('#make_call').text('End');
-//                        var url = "http://localhost:3000/api/makecall";
-//                        $.ajax({
-//                            url: url,
-//                            type: 'GET',
-//                            success: function (data) {
-//                                console.log(data)
-//                                alert(data);
-//                            }
-//                        });
-
                     }
                     else{
                         $('#status_txt').text('Invalid Destination');

@@ -3,6 +3,6 @@ module.exports = {
   jwtExpiresIn: '24y',
   authId: 'MAZWI1OGZIYZBKYTVHMG',
   authToken: 'MWMyNzM1Y2RlMjY1MWQ0OTMzZWJjY2JmYTc5MTI1',
-  tmpServer: 'http://c486626a.ngrok.io',
+  tmpServer: 'https://8bf2ac20.ngrok.io',
   webPort: 3000
 };

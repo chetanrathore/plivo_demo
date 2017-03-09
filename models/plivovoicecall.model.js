@@ -35,7 +35,7 @@ const PlivoVoiceCallLog = new Schema({
     startTime: {
         type: Date,
     },
-    AnswerTime: {
+    answerTime: {
         type: Date,
     },
     hangupCause: {
