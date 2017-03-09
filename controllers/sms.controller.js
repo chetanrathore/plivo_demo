@@ -23,17 +23,18 @@ function create(req, res, next) {
 
     User.getByUserId(sms.fromUser)
         .then(function (fromUser) {
-            param.src = "918140170017"//"Test_PLV"//fromUser.phoneNo;
+            param.src = "17602791417"//"Test_PLV"//fromUser.phoneNo;
             return User.getByUserId(sms.toUser)
         })
         .then(function (toUser) {
-            param.dst = toUser.phoneNo;
+//            param.dst = toUser.phoneNo;
+            param.dst = '17602791418';
             param.text = sms.smsText;
             param.url = config.tmpServer+"/sms_status";
             param.method = "POST";
             p.send_message(param, function (status, response) {
-                    console.log('Status: ', status);
-                    console.log('API Response:\n', response);
+                    // console.log('Status: ', status);
+                    // console.log('API Response:\n', response);
                     sms.status = status;
                     sms.messageUUId = response['message_uuid'] || "";
                     sms.save();
