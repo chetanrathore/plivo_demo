@@ -78,6 +78,8 @@ router.post('/api/plivo_app', plivoNoCtrl.createApplication);
 
 router.post('/api/plivo_endpoint', plivoNoCtrl.createEndpoint);
 
+router.get('/api/endpoint', plivoNoCtrl.getEndPointById);
+
 router.put('/api/plivo_app/:appId', plivoNoCtrl.updateApplicationById);
 
 router.post('/api/new_plivo_number/', plivoNoCtrl.getNewNumbers);

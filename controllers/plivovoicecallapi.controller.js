@@ -30,23 +30,30 @@ function makeCall(req, res, next) {
         'redirect': 'false',
         'fileFormat':'mp3',
     }
-    response.addRecord(recordParam);
+     response.addRecord(recordParam);
     //util.format("http://%s/record_api_action/", req.get('host'));
     var param1 = {
         'action': config.tmpServer+"/call_action/",
         'method':'POST',
-        'callerId': "18064100731",
-        'callerName':"Test VIF",
+        'callerId': "+1760-279-1418",
+       // 'callerName':"Test VIF",
         'dialMusic': 'real',
         'redirect': 'true'
     };
-    var dial = response.addDial(param1);
-    dial.addNumber("917069592747");
 
-    //response.addSpeak("Hello from Testing View in focus.");
+    var dial = response.addDial(param1);
+
+    // dial.addUser("sip:testcall1170301071206@phone.plivo.com"  );
+
+    //dial.addUser("sip:ios170308091034@phone.plivo.com");
+
+    dial.addNumber(req.body.To);
+
+    response.addSpeak("Hello from Testing View in focus.Hello from Testing View in focus.");
     console.log(response.toXML());
     res.set({'Content-Type': 'text/xml'});
     res.send(response.toXML());
+
 }
 
 /**
