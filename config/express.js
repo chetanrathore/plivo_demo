@@ -105,7 +105,30 @@ app.all('/response/ivr/', function(request, response) {
 
 });
 
+app.all('/get_digits/', function (req, res) {
+
+    console.log(JSON.stringify(req.body));
+    // Plivo passes the digit captured by the xml produced by /record_api/ function as the parameter Digits
+    var digit = req.params.Digits;
+    // CallUUID parameter is automatically added by Plivo when processing the xml produced by /record_api/ function
+    var call_uuid = req.params.CallUUID;
+
+    var p = plivo.RestAPI({
+        "authId": config.authId,
+        "authToken": config.authToken
+    });
+
+    if (digit === "1") {
+        console.log("Press 1");
+    }else if(digit === "2") {
+        console.log("Press 2");
+    } else{
+        console.log("Wrong press try again,");
+    }
+});
+
 app.all('/response_digits/', function(request, response) {
+
     var digits = request.param('Digits');
     var r = plivo.Response();
     if (digits == "1"){
@@ -137,6 +160,18 @@ app.all('/response_digits/', function(request, response) {
 
 });
 
+
+//DialDigitsMatch
+app.post('/call_back/', function (req, res) {
+    console.log("-----CallBack-----");
+    console.log(JSON.stringify(req.body));
+
+    var response = plivo.Response();
+    response.addSpeak("Hello from Testing View in focus.Hello from Testing View in focus.");
+    console.log(response.toXML());
+    res.set({'Content-Type': 'text/xml'});
+    res.send(response.toXML());
+});
 
 // sip:testcall1170301071206@phone.plivo.com
 //sip:testcall1170301071206@phone.plivo.com

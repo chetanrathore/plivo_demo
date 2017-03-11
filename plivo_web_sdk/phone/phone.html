@@ -17,6 +17,7 @@
                 margin: 0 auto;
                 max-width: 700px;
             }
+
             .container-narrow > hr {
                 margin: 30px 0;
             }
@@ -101,8 +102,8 @@
             }
 
             function login() {
-             //   Plivo.conn.login($("#username").val(), $("#password").val());
-                Plivo.conn.login('testcall1170301071206', 'lanetteam1');//viewinfocus170224104215//testcall1170301071206
+                Plivo.conn.login($("#username").val(), $("#password").val());
+             //   Plivo.conn.login('testcall1170301071206', 'lanetteam1');//viewinfocus170224104215//testcall1170301071206
             }
 
             function logout() {
@@ -248,7 +249,7 @@
                 Plivo.onIncomingCall = onIncomingCall;
                 Plivo.onIncomingCallCanceled = onIncomingCallCanceled;
                 Plivo.init();
-                login();
+             //   login();
             });
 
         </script>
